@@ -5,7 +5,7 @@ CC = g++
 
 CUDA_INCLUDEPATH=$(CUDA_DIR)/include
 
-NVCC_OPTS=-O3 -lineinfo -Xcompiler -m64 -g
+NVCC_OPTS=-O3 -lineinfo -Xcompiler -m64 -g -arch=sm_86
 
 GCC_OPTS=-O3 -Wall -Wextra -m64
 
