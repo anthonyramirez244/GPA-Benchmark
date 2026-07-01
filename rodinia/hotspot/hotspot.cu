@@ -119,22 +119,24 @@ __global__ void calculate_temp(int iteration,  //number of iteration
         __shared__ float temp_on_cuda[BLOCK_SIZE][BLOCK_SIZE];
         __shared__ float power_on_cuda[BLOCK_SIZE][BLOCK_SIZE];
         __shared__ float temp_t[BLOCK_SIZE][BLOCK_SIZE]; // saving temparary temperature result
+        __shared__ float step_div_Cap;
+        __shared__ float Rx_1,Ry_1,Rz_1;
 
 	float amb_temp = 80.0;
-        float step_div_Cap;
-        float Rx_1,Ry_1,Rz_1;
-        
+
 	int bx = blockIdx.x;
         int by = blockIdx.y;
 
 	int tx=threadIdx.x;
 	int ty=threadIdx.y;
-	
-	step_div_Cap=step/Cap;
-	
-	Rx_1=1/Rx;
-	Ry_1=1/Ry;
-	Rz_1=1/Rz;
+
+	if (tx == 0 && ty == 0) {
+	    step_div_Cap=step/Cap;
+
+	    Rx_1=1/Rx;
+	    Ry_1=1/Ry;
+	    Rz_1=1/Rz;
+	}
 	
         // each block finally computes result for a small block
         // after N iterations. 
