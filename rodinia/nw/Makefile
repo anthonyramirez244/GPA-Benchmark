@@ -9,7 +9,7 @@ SRC = needle.cu
 EXE = needle
 
 release: $(SRC)
-	$(CC) ${KERNEL_DIM} -O3 -lineinfo $(SRC) -o $(EXE) -I$(INCLUDE) -L$(CUDA_LIB_DIR) 
+	$(CC) ${KERNEL_DIM} -O3 -lineinfo -arch=sm_86 -DTRACEBACK $(SRC) -o $(EXE) -I$(INCLUDE) -L$(CUDA_LIB_DIR)
 
 enum: $(SRC)
 	$(CC) ${KERNEL_DIM} -deviceemu $(SRC) -o $(EXE) -I$(INCLUDE) -L$(CUDA_LIB_DIR) 
