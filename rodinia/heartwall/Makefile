@@ -11,7 +11,7 @@ heartwall: main.o ./AVI/avilib.o ./AVI/avimod.o
 
 # compile main function file into object (binary)
 main.o: main.cu kernel.cu define.c
-	$(CUDA_DIR)/bin/nvcc -lineinfo $(OUTPUT) $(KERNEL_DIM) main.cu -I./AVI -c -O3
+	$(CUDA_DIR)/bin/nvcc -lineinfo -arch=sm_86 -DOUTPUT $(KERNEL_DIM) main.cu -I./AVI -c -O3
 
 ./AVI/avilib.o ./AVI/avimod.o:
 	cd AVI; make;
