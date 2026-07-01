@@ -25,7 +25,8 @@ Kernel( Node* g_graph_nodes, int* g_graph_edges, bool* g_graph_mask, bool* g_upd
 	if( tid<no_of_nodes && g_graph_mask[tid])
 	{
 		g_graph_mask[tid]=false;
-		for(int i=g_graph_nodes[tid].starting; i<(g_graph_nodes[tid].no_of_edges + g_graph_nodes[tid].starting); i++)
+		Node node = g_graph_nodes[tid];
+		for(int i=node.starting; i<(node.no_of_edges + node.starting); i++)
 			{
 			int id = g_graph_edges[i];
 			if(!g_graph_visited[id])
