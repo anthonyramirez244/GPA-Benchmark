@@ -11,6 +11,7 @@ NVCCFLAGS += -I../common \
 			 -O3 \
 			 -use_fast_math \
 			 -lineinfo \
+			 -arch=sm_86 \
 			 -lm \
 			 $(SPACE)
 
