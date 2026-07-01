@@ -12,10 +12,12 @@
 #define SDATA( index)      CUT_BANK_CHECKER(sdata, index)
 
 // t_features has the layout dim0[points 0-m-1]dim1[ points 0-m-1]...
-texture<float, 1, cudaReadModeElementType> t_features;
 // t_features_flipped has the layout point0[dim 0-n-1]point1[dim 0-n-1]
-texture<float, 1, cudaReadModeElementType> t_features_flipped;
-texture<float, 1, cudaReadModeElementType> t_clusters;
+// (both were CUDA texture references; ported to a texture object below since
+// texture references were removed in CUDA 12 -- t_features_flipped and
+// t_clusters are never actually read in the default build,
+// GPU_NEW_CENTER_REDUCTION is off, so only t_features needs a live texture
+// object, passed in as a kernel parameter)
 
 
 __constant__ float c_clusters[ASSUMED_NR_CLUSTERS*34];		/* constant memory for cluster centers */
@@ -62,7 +64,8 @@ kmeansPoint(float  *features,			/* in: [npoints*nfeatures] */
             int    *membership,
 			float  *clusters,
 			float  *block_clusters,
-			int    *block_deltas) 
+			int    *block_deltas,
+			cudaTextureObject_t t_features)
 {
 
 	// block ID
@@ -86,7 +89,7 @@ kmeansPoint(float  *features,			/* in: [npoints*nfeatures] */
 			for (j=0; j < nfeatures; j++)
 			{					
 				int addr = point_id + j*npoints;					/* appropriate index of data point */
-				float diff = (tex1Dfetch(t_features,addr) -
+				float diff = (tex1Dfetch<float>(t_features,addr) -
 							  c_clusters[cluster_base_index + j]);	/* distance between a data point to cluster centers */
 				ans += diff*diff;									/* sum of squares */
 			}
