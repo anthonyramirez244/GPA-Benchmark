@@ -31,7 +31,7 @@ main.o: 	main.cu \
 				srad2_kernel.cu \
 				compress_kernel.cu
 	nvcc	main.cu \
-				-c -O3 -lineinfo
+				-c -O3 -lineinfo -arch=sm_86
 
 # delete all object files
 clean:
