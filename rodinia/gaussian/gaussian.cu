@@ -180,10 +180,8 @@ int main(int argc, char *argv[])
         PrintAry(b, Size);
     }
     BackSub();
-    if (verbose) {
-        printf("The final solution is: \n");
-        PrintAry(finalVec,Size);
-    }
+    printf("The final solution is: \n");
+    PrintAry(finalVec,Size);
     printf("\nTime total (including memory transfers)\t%f sec\n", time_total * 1e-6);
     printf("Time for CUDA kernels:\t%f sec\n",totalKernelTime * 1e-6);
     
