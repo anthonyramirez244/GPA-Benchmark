@@ -41,7 +41,7 @@ all : $(EXECUTABLE)
 
 
 $(EXECUTABLE) : $(OBJS)
-	$(NVCC) $(NVCCFLAGS) -o $@  $?
+	$(NVCC) $(NVCCFLAGS) -o $@  $^
 
 clean:
 	rm -f $(EXECUTABLE) $(OBJS) *.linkinfo *.sqlite *.qdrep
