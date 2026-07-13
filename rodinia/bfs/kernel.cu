@@ -25,14 +25,44 @@ Kernel( Node* g_graph_nodes, int* g_graph_edges, bool* g_graph_mask, bool* g_upd
 	if( tid<no_of_nodes && g_graph_mask[tid])
 	{
 		g_graph_mask[tid]=false;
-		Node node = g_graph_nodes[tid];
-		for(int i=node.starting; i<(node.no_of_edges + node.starting); i++)
+		int nedges = g_graph_nodes[tid].no_of_edges;
+		int starting = g_graph_nodes[tid].starting;
+		int left = nedges - nedges / 4 * 4;
+		int cost = g_cost[tid];
+		for (int i=starting; i<(left + starting); i+=1)
 			{
-			int id = g_graph_edges[i];
-			if(!g_graph_visited[id])
+			int id1 = g_graph_edges[i];
+			if(!g_graph_visited[id1])
 				{
-				g_cost[id]=g_cost[tid]+1;
-				g_updating_graph_mask[id]=true;
+				g_cost[id1]=cost+1;
+				g_updating_graph_mask[id1]=true;
+				}
+			}
+		for (int i=starting + left; i<(nedges + starting); i+=4)
+			{
+			int id1 = g_graph_edges[i];
+			int id2 = g_graph_edges[i + 1];
+			int id3 = g_graph_edges[i + 2];
+			int id4 = g_graph_edges[i + 3];
+			if(!g_graph_visited[id1])
+				{
+				g_cost[id1]=cost+1;
+				g_updating_graph_mask[id1]=true;
+				}
+			if(!g_graph_visited[id2])
+				{
+				g_cost[id2]=cost+1;
+				g_updating_graph_mask[id2]=true;
+				}
+			if(!g_graph_visited[id3])
+				{
+				g_cost[id3]=cost+1;
+				g_updating_graph_mask[id3]=true;
+				}
+			if(!g_graph_visited[id4])
+				{
+				g_cost[id4]=cost+1;
+				g_updating_graph_mask[id4]=true;
 				}
 			}
 	}
