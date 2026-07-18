@@ -1,6 +1,13 @@
 *.o
 *.hpcstruct
-gpa-database
+# gpa-database holds regenerable pipeline output (gpa.advice, experiment.xml, src/,
+# pipeline-logs/, profile-summary.json, pgo-ledger-index.json) alongside the two files
+# that are NOT regenerable -- the ledger and baseline -- so ignore the directory's
+# contents by default but explicitly keep those two.
+gpa-database/*
+!gpa-database/pgo-ledger.md
+!gpa-database/pgo-baseline.json
+!gpa-database/pgo-baseline-output-*
 gpa-measurements
 gpa-database-*
 gpa.log

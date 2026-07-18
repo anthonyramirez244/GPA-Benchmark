@@ -1,0 +1,9 @@
+{
+  "benchmark": "nw",
+  "timestamp": "2026-07-01T19:43:01.537073+00:00",
+  "endToEndSeconds": 0.28883117999976093,
+  "kernelTimesNs": {},
+  "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "correctness": "PASS",
+  "correctnessDetail": "baseline output captured as golden reference"
+}

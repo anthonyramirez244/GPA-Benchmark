@@ -1,0 +1,9 @@
+{
+  "benchmark": "huffman",
+  "timestamp": "2026-07-01T18:36:55.525675+00:00",
+  "endToEndSeconds": 0.25682005099997696,
+  "kernelTimesNs": {},
+  "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "correctness": "PASS",
+  "correctnessDetail": "stdout contained pass marker"
+}
