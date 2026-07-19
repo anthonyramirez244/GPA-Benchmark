@@ -4,10 +4,16 @@
 # pipeline-logs/, profile-summary.json, pgo-ledger-index.json) alongside the two files
 # that are NOT regenerable -- the ledger and baseline -- so ignore the directory's
 # contents by default but explicitly keep those two.
-gpa-database/*
-!gpa-database/pgo-ledger.md
-!gpa-database/pgo-baseline.json
-!gpa-database/pgo-baseline-output-*
+# NOTE: needs the "**/" prefix, not just "gpa-database/*" -- a pattern with a
+# non-trailing slash and no leading "**/" is anchored to this .gitignore's own
+# directory (repo root) per gitignore's matching rules, so a bare
+# "gpa-database/*" never matched any nested benchmark's gpa-database/ at all
+# (e.g. rodinia/bfs/gpa-database/) -- found 2026-07-19 when onboarding xsbench,
+# but it silently affected every existing benchmark too.
+**/gpa-database/*
+!**/gpa-database/pgo-ledger.md
+!**/gpa-database/pgo-baseline.json
+!**/gpa-database/pgo-baseline-output-*
 gpa-measurements
 gpa-database-*
 gpa.log
