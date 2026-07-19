@@ -1,9 +1,12 @@
 {
   "benchmark": "lud",
-  "timestamp": "2026-07-01T19:35:26.828652+00:00",
-  "endToEndSeconds": 0.24275233100070182,
+  "timestamp": "2026-07-19T20:11:34.573663+00:00",
+  "endToEndSeconds": 0.22284028099966235,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "selfReportedKernelTimesNs": {
+    "lud_cuda (kernel+memcpy)": 1917000.0
+  },
   "correctness": "PASS",
   "correctnessDetail": "baseline stdout captured as golden reference"
 }
