@@ -105,7 +105,18 @@ __global__ static void vlc_encode_kernel_sm64huff(unsigned int* data,
     // traverse down the tree building the scan in place
     for (unsigned int d = 1; d < blockDim.x; d *= 2)    {
         offset >>= 1;
-        __syncthreads();
+        // Once d <= 32, only warp 0 has any active thread (k < d <= 32) --
+        // a block-wide __syncthreads() here forces every other warp to wait
+        // on a barrier they have no shared-memory dependency on. __syncwarp()
+        // is sufficient (and required, not optional, for correctness on
+        // independent-thread-scheduling architectures) for warp-0-only
+        // visibility; d is identical across all threads in the block, so
+        // this branch itself never diverges. (GPUWarpBalanceOptimizer)
+        if (d <= 32) {
+            __syncwarp();
+        } else {
+            __syncthreads();
+        }
         if (k < d)   {
             unsigned char ai = offset*(2*k+1)-1;
             unsigned char bi = offset*(2*k+2)-1;
