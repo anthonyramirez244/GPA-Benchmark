@@ -1,9 +1,13 @@
 {
   "benchmark": "b+tree",
-  "timestamp": "2026-07-13T17:05:16.412635+00:00",
-  "endToEndSeconds": 0.884794931999977,
+  "timestamp": "2026-07-19T20:11:53.083703+00:00",
+  "endToEndSeconds": 0.9084014740001294,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "selfReportedKernelTimesNs": {
+    "findK": 369999.994,
+    "findRangeK": 274999.999
+  },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"
 }
