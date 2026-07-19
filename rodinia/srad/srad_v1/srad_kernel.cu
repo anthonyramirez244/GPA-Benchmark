@@ -29,7 +29,20 @@ __global__ void srad(	fp d_lambda,
 	fp d_dN_loc, d_dS_loc, d_dW_loc, d_dE_loc;
 	fp d_c_loc;
 	fp d_G2,d_L,d_num,d_den,d_qsqr;
-	
+
+	// d_q0sqr is a kernel parameter -- identical for every thread in the
+	// launch, so d_q0sqr*(1+d_q0sqr) is a block-uniform (in fact grid-uniform)
+	// value that every thread was redundantly dividing by. Compute its
+	// reciprocal once per block and broadcast via shared memory, replacing
+	// each thread's division with a multiply (GPUStrengthReductionOptimizer).
+	// Declared/computed outside the ei<d_Ne guard below so every thread in
+	// the block reaches this __syncthreads(), even ones past d_Ne.
+	__shared__ fp d_q0sqr_recip;
+	if (tx == 0) {
+		d_q0sqr_recip = 1.0 / (d_q0sqr * (1.0 + d_q0sqr));
+	}
+	__syncthreads();
+
 	// figure out row/col location in new matrix
 	row = (ei+1) % d_Nr - 1;													// (0-n) row
 	col = (ei+1) / d_Nr + 1 - 1;												// (0-n) column
@@ -61,7 +74,7 @@ __global__ void srad(	fp d_lambda,
 		d_qsqr = d_num/(d_den*d_den);										// qsqr (based on num and den)
 	 
 		// diffusion coefficent (equ 33) (every element of IMAGE)
-		d_den = (d_qsqr-d_q0sqr) / (d_q0sqr * (1+d_q0sqr)) ;				// den (based on qsqr and q0sqr)
+		d_den = (d_qsqr-d_q0sqr) * d_q0sqr_recip ;							// den (based on qsqr and q0sqr)
 		d_c_loc = 1.0 / (1.0+d_den) ;										// diffusion coefficient (based on den)
 	    
 		// saturate diffusion coefficent to 0-1 range
