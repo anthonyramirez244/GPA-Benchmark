@@ -1,13 +1,25 @@
 {
   "benchmark": "srad",
-  "timestamp": "2026-07-19T20:11:43.066323+00:00",
-  "endToEndSeconds": 0.3045553789997939,
+  "timestamp": "2026-08-09T02:19:27.057278+00:00",
+  "endToEndSeconds": 0.37636453899995104,
+  "endToEndStddevSeconds": 0.02218799970656427,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "extract": 528000.0040000001,
-    "srad+srad2+prepare+reduce (combined COMPUTE stage)": 17939999.7,
-    "compress": 96999.996
+    "extract": 1046000.0490000001,
+    "compress": 38999.999,
+    "srad+srad2+prepare+reduce (combined COMPUTE stage)": 16481999.308000002
+  },
+  "selfReportedKernelStddevNs": {
+    "extract": 134239.79999117032,
+    "compress": 8544.003628276463,
+    "srad+srad2+prepare+reduce (combined COMPUTE stage)": 548206.7461495302
+  },
+  "selfReportedKernelRunsN": {
+    "extract": 3,
+    "compress": 3,
+    "srad+srad2+prepare+reduce (combined COMPUTE stage)": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"
