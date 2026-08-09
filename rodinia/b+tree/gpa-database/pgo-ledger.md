@@ -30,3 +30,27 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Self-reported kernel timing findRangeK: 275000ns -> 289000ns (0.952x)
 - Change: rodinia/b+tree-opt's actual validated technique for findRangeK (untried before -- `-opt` doesn't touch findK at all, only findRangeK): hoisted `startD[bid]`/`endD[bid]` and the `knodesD[currKnodeD[bid]]`/`knodesD[lastKnodeD[bid]]`-derived key/indices pointers into locals, re-derived once per loop iteration instead of recomputing `knodesD[currKnodeD[bid]]` on every reference; removed the `currKnodeD[bid]`/`lastKnodeD[bid]` global write-back entirely (matches `-opt` -- nothing outside this kernel needs the intermediate per-level values). `findK` (from the entry above) untouched this round.
 - Decision: REVERTED (findRangeK only; findK's earlier KEPT fix stays) — correctness PASS, but a real regression: 0.952x. `findK`'s speedup stayed consistent at 1.355x (vs. 1.237x measured before, within noise), confirming that fix is solid and this measurement is trustworthy. Third confirmed case this session (after nw, lud) where a technique validated in the repo's own `-opt` reference, applied exactly as `-opt` applies it, measurably regresses on this hardware. Pattern emerging: of the 4 "apply the exact human-validated -opt technique" retests this session (huffman implicitly via independent discovery, nw, lud, b+tree findRangeK), only huffman's independently-discovered match actually helped -- the other 3 direct `-opt` ports regressed. Not re-attempting.
+
+### 2026-08-09T02:54:56.671184+00:00 — b+tree
+- Problem size: file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.9084s (σ=0.0000, n=?) -> 1.0504s (σ=0.0992, n=3) (0.865x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing findK: 370000ns (σ=0, n=?) -> 809000ns (σ=57105, n=3) (0.457x) [clears 2σ]
+- Self-reported kernel timing findRangeK: 275000ns (σ=0, n=?) -> 275000ns (σ=99985, n=3) (1.000x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-09T02:59:47.642549+00:00 — b+tree
+- Problem size: file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.9084s (σ=0.0000, n=?) -> 0.9864s (σ=0.0485, n=3) (0.921x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing findK: 370000ns (σ=0, n=?) -> 798000ns (σ=12220, n=3) (0.464x) [clears 2σ]
+- Self-reported kernel timing findRangeK: 275000ns (σ=0, n=?) -> 244000ns (σ=24007, n=3) (1.127x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-09T03:08:31.900343+00:00 — b+tree
+- Problem size: file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 1.1167s (σ=0.0359, n=3) -> 0.9720s (σ=0.0207, n=3) (1.149x) [clears 2σ]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing findK: 873000ns (σ=170066, n=3) -> 875000ns (σ=35852, n=3) (0.998x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing findRangeK: 349000ns (σ=58847, n=3) -> 242000ns (σ=25942, n=3) (1.442x) [NOT SIGNIFICANT, within 2σ noise]

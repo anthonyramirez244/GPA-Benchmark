@@ -26,6 +26,7 @@ gpa.log
 *.out
 *.pgm
 result.txt
+output.txt
 rodinia/bfs-opt/bfs
 rodinia/nw-opt/needle
 rodinia/huffman/pavle

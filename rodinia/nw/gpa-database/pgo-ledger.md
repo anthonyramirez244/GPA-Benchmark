@@ -51,3 +51,19 @@ Before proposing a new optimization, check here first for prior attempts on the 
   problem size is ever revisited upward for other reasons, this technique is worth reconsidering
   rather than treated as permanently closed. See report.md Phase 2 for the cross-benchmark
   context (this was one of 2-3 REVERTED entries retested at scale this session).
+
+### 2026-08-09T02:56:28.327689+00:00 — nw
+- Problem size: 2048 10 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.2700s (σ=0.0000, n=?) -> 0.3141s (σ=0.0322, n=3) (0.859x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing needle_cuda_shared_1: 3815200ns (σ=0, n=?) -> 2247520ns (σ=58767, n=3) (1.698x) [clears 2σ]
+- Self-reported kernel timing needle_cuda_shared_2: 1183680ns (σ=0, n=?) -> 1201152ns (σ=10293, n=3) (0.985x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-09T03:01:10.785080+00:00 — nw
+- Problem size: 2048 10 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.2700s (σ=0.0000, n=?) -> 0.3138s (σ=0.0260, n=3) (0.860x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing needle_cuda_shared_1: 3815200ns (σ=0, n=?) -> 2386048ns (σ=192579, n=3) (1.599x) [clears 2σ]
+- Self-reported kernel timing needle_cuda_shared_2: 1183680ns (σ=0, n=?) -> 1335296ns (σ=66689, n=3) (0.886x) [clears 2σ]

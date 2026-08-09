@@ -1,11 +1,20 @@
 {
   "benchmark": "hotspot",
-  "timestamp": "2026-07-19T23:57:53.826722+00:00",
-  "endToEndSeconds": 0.5843478569986473,
+  "timestamp": "2026-08-09T03:06:35.543362+00:00",
+  "problemSize": "512 2 2 ../../data/hotspot/temp_512 ../../data/hotspot/power_512 output.out",
+  "endToEndSeconds": 0.6793828189997839,
+  "endToEndStddevSeconds": 0.018751345849257955,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "calculate_temp": 506752.0
+    "calculate_temp": 934048.0
+  },
+  "selfReportedKernelStddevNs": {
+    "calculate_temp": 52414.61618034929
+  },
+  "selfReportedKernelRunsN": {
+    "calculate_temp": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"

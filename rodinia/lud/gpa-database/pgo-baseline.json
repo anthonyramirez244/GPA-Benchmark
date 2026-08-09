@@ -1,11 +1,20 @@
 {
   "benchmark": "lud",
-  "timestamp": "2026-07-19T20:11:34.573663+00:00",
-  "endToEndSeconds": 0.22284028099966235,
+  "timestamp": "2026-08-09T02:59:02.808733+00:00",
+  "problemSize": "-s 256 -v",
+  "endToEndSeconds": 0.27180545999999595,
+  "endToEndStddevSeconds": 0.02990921559290826,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "lud_cuda (kernel+memcpy)": 1917000.0
+    "lud_cuda (kernel+memcpy)": 2478000.0
+  },
+  "selfReportedKernelStddevNs": {
+    "lud_cuda (kernel+memcpy)": 545474.4112543991
+  },
+  "selfReportedKernelRunsN": {
+    "lud_cuda (kernel+memcpy)": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "baseline stdout captured as golden reference"

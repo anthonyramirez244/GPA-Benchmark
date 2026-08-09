@@ -1,12 +1,23 @@
 {
   "benchmark": "b+tree",
-  "timestamp": "2026-07-19T20:11:53.083703+00:00",
-  "endToEndSeconds": 0.9084014740001294,
+  "timestamp": "2026-08-09T03:06:07.859338+00:00",
+  "problemSize": "file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt",
+  "endToEndSeconds": 1.116694180000195,
+  "endToEndStddevSeconds": 0.03585039147738149,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "findK": 369999.994,
-    "findRangeK": 274999.999
+    "findK": 873000.012,
+    "findRangeK": 349000.00899999996
+  },
+  "selfReportedKernelStddevNs": {
+    "findK": 170065.67440354728,
+    "findRangeK": 58847.255857857126
+  },
+  "selfReportedKernelRunsN": {
+    "findK": 3,
+    "findRangeK": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"

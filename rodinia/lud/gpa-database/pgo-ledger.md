@@ -48,3 +48,17 @@ Before proposing a new optimization, check here first for prior attempts on the 
   with-scale hypothesis from nw's retest, but weaker evidence here since it never clears
   significance in either direction at either size for this specific metric. Not proposing to KEPT
   at either size. See report.md Phase 2.
+
+### 2026-08-09T02:56:19.302082+00:00 — lud
+- Problem size: -s 256 -v (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: FAIL (2 differing/missing line(s) vs golden stdout reference)
+- End-to-end: 0.2228s (σ=0.0000, n=?) -> 0.2719s (σ=0.0246, n=3) (0.820x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lud_cuda (kernel+memcpy): 1917000ns (σ=0, n=?) -> 3598000ns (σ=804386, n=3) (0.533x) [clears 2σ]
+
+### 2026-08-09T02:59:15.658072+00:00 — lud
+- Problem size: -s 256 -v
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 0.2718s (σ=0.0299, n=3) -> 0.2700s (σ=0.0262, n=3) (1.007x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lud_cuda (kernel+memcpy): 2478000ns (σ=545474, n=3) -> 2916000ns (σ=258156, n=3) (0.850x) [NOT SIGNIFICANT, within 2σ noise]

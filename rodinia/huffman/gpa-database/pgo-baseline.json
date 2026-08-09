@@ -1,11 +1,20 @@
 {
   "benchmark": "huffman",
-  "timestamp": "2026-07-19T20:11:14.854132+00:00",
-  "endToEndSeconds": 0.22848789100135036,
+  "timestamp": "2026-08-09T03:06:15.912484+00:00",
+  "problemSize": "../../data/huffman/test1024_H2.206587175259.in",
+  "endToEndSeconds": 0.3241913030001342,
+  "endToEndStddevSeconds": 0.01708265635154826,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "vlc_encode_kernel_sm64huff": 40685.0
+    "vlc_encode_kernel_sm64huff": 36230.0
+  },
+  "selfReportedKernelStddevNs": {
+    "vlc_encode_kernel_sm64huff": 12732.266190012419
+  },
+  "selfReportedKernelRunsN": {
+    "vlc_encode_kernel_sm64huff": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "stdout contained pass marker"

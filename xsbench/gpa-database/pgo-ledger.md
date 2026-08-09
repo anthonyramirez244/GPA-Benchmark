@@ -19,3 +19,24 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Self-reported kernel timing lookup: 224000000ns -> 224000000ns (1.000x)
 - Change: identical re-application of the same `#pragma unroll` from the 2026-07-19T18:38:57 entry above, specifically to re-measure it now that `benchmarks.json`'s new `localTiming` config gives xsbench a real, nsys-independent kernel timer (parses Simulation's own `chrono`+`cudaDeviceSynchronize`-based "Average kernel execution time" line). Not a new idea being tried -- the same edit, better instrumentation.
 - Decision: REVERTED — confirmed no-op, not a regression. Self-reported kernel timing came back bit-for-bit identical (224000000ns -> 224000000ns, 1.000x) despite the edit being present, while end-to-end moved differently between the two measurements of this exact same edit (0.951x here vs. 0.989x in the first attempt) -- that inconsistency on an unchanged kernel confirms the earlier end-to-end delta was pure run-to-run noise in the ~14s host-dominated total, not a real effect. Most likely explanation: `num_nucs[mat]` is a runtime-variable trip count, so nvcc's plain `#pragma unroll` (no fixed factor) silently declined to unroll anything here -- the compiled kernel is presumably unchanged. REVERTED for the same reason as before (no measured benefit), but now for a clear, well-substantiated reason instead of an ambiguous one. `GPUCodeReorderOptimizer`'s overlapping finding on this same loop remains untried.
+
+### 2026-08-09T02:57:55.338577+00:00 — xsbench
+- Problem size: -s small -m event -r 3 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (stdout contained pass marker)
+- End-to-end: 14.0865s (σ=0.0000, n=?) -> 15.3250s (σ=0.1141, n=3) (0.919x) [clears 2σ]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lookup: 224000000ns (σ=0, n=?) -> 245000000ns (σ=1000000, n=3) (0.914x) [clears 2σ]
+
+### 2026-08-09T03:02:31.471406+00:00 — xsbench
+- Problem size: -s small -m event -r 3 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (stdout contained pass marker)
+- End-to-end: 14.0865s (σ=0.0000, n=?) -> 15.5977s (σ=0.0930, n=3) (0.903x) [clears 2σ]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lookup: 224000000ns (σ=0, n=?) -> 245000000ns (σ=0, n=3) (0.914x) [n<2 samples on at least one side, no noise estimate]
+
+### 2026-08-09T03:10:38.180281+00:00 — xsbench
+- Problem size: -s small -m event -r 3
+- Correctness: PASS (stdout contained pass marker)
+- End-to-end: 16.1017s (σ=0.0578, n=3) -> 15.4106s (σ=0.3486, n=3) (1.045x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lookup: 246000000ns (σ=577350, n=3) -> 244000000ns (σ=9865766, n=3) (1.008x) [NOT SIGNIFICANT, within 2σ noise]

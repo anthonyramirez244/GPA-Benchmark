@@ -60,3 +60,21 @@ Before proposing a new optimization, check here first for prior attempts on the 
   confidently confirm a ~5-9% effect against ~2-3% relative per-run noise. This is the case that
   motivated adding `SIGNIFICANCE_MULTIPLE`/`is_significant()` to `pgo_bench.py` in the first
   place (2026-08-08 session).
+
+### 2026-08-09T02:56:36.393449+00:00 — srad
+- Problem size: 100 0.5 502 458 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.3764s (σ=0.0222, n=3) -> 0.3572s (σ=0.0325, n=3) (1.054x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing extract: 1046000ns (σ=134240, n=3) -> 990000ns (σ=58129, n=3) (1.057x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing compress: 39000ns (σ=8544, n=3) -> 38000ns (σ=33546, n=3) (1.026x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing srad+srad2+prepare+reduce (combined COMPUTE stage): 16481999ns (σ=548207, n=3) -> 17196000ns (σ=675748, n=3) (0.958x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-09T03:01:18.934284+00:00 — srad
+- Problem size: 100 0.5 502 458 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.3764s (σ=0.0222, n=3) -> 0.3521s (σ=0.0302, n=3) (1.069x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing extract: 1046000ns (σ=134240, n=3) -> 986000ns (σ=38004, n=3) (1.061x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing compress: 39000ns (σ=8544, n=3) -> 36000ns (σ=1528, n=3) (1.083x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing srad+srad2+prepare+reduce (combined COMPUTE stage): 16481999ns (σ=548207, n=3) -> 16364999ns (σ=943347, n=3) (1.007x) [NOT SIGNIFICANT, within 2σ noise]

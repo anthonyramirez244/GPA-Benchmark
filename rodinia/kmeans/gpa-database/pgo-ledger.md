@@ -30,3 +30,24 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Self-reported kernel timing kmeansPoint: 1690304ns -> 1661600ns (1.017x)
 - Change: `#pragma unroll 8` on kmeansPoint's `for (j=0; j < nfeatures; j++)` loop (kmeans_cuda_kernel.cu:89) -- matches both GPA's own fresh top finding (`GPULoopUnrollOptimizer`, 30.564% ratio, same line) and rodinia/kmeans-opt's validated technique exactly. First real GPA profile + attempt for kmeans this session.
 - Decision: REVERTED -- three real `selfReportedKernelSpeedups` measurements this round (0.996x, 0.831x, 1.017x) swing too widely to trust any single one; no reliable signal either way. Consistent with the 2026-07-01 entry's own conclusion: kmeans' ~4s runtime here is dominated by loading the 494K-point kdd_cup dataset, so kmeansPoint's absolute kernel time (~1.7-2.0ms) is tiny and its single-sample self-reported timing (last-of-3-runs, not yet median-smoothed -- a known limitation noted 2026-07-19) is itself noisy at this scale. A fourth case in the "-opt-matching retest" set, and like nw/lud/b+tree-findRangeK, does not show a clean confirmed win despite matching both GPA's own advice and the human-validated reference exactly.
+
+### 2026-08-09T02:56:11.721522+00:00 — kmeans
+- Problem size: -o -i ../../data/kmeans/kdd_cup (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 4.0320s (σ=0.0000, n=?) -> 4.3781s (σ=0.4642, n=3) (0.921x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing kmeansPoint: 1690304ns (σ=0, n=?) -> 1661024ns (σ=84456, n=3) (1.018x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-09T03:01:01.927632+00:00 — kmeans
+- Problem size: -o -i ../../data/kmeans/kdd_cup (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 4.0320s (σ=0.0000, n=?) -> 4.4376s (σ=0.0406, n=3) (0.909x) [clears 2σ]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing kmeansPoint: 1690304ns (σ=0, n=?) -> 1800128ns (σ=632809, n=3) (0.939x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-09T03:09:24.888509+00:00 — kmeans
+- Problem size: -o -i ../../data/kmeans/kdd_cup
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 4.4970s (σ=0.0653, n=3) -> 4.4261s (σ=0.0344, n=3) (1.016x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing kmeansPoint: 1725440ns (σ=60566, n=3) -> 1665952ns (σ=70540, n=3) (1.036x) [NOT SIGNIFICANT, within 2σ noise]

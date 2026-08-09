@@ -1,11 +1,20 @@
 {
   "benchmark": "gaussian",
-  "timestamp": "2026-07-19T20:11:23.144021+00:00",
-  "endToEndSeconds": 0.24628754500008654,
+  "timestamp": "2026-08-09T03:06:24.836549+00:00",
+  "problemSize": "-f ../../data/gaussian/matrix208.txt",
+  "endToEndSeconds": 0.29764625100006015,
+  "endToEndStddevSeconds": 0.027871516577922063,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "Fan1+Fan2 (combined)": 12305000.0
+    "Fan1+Fan2 (combined)": 13005000.0
+  },
+  "selfReportedKernelStddevNs": {
+    "Fan1+Fan2 (combined)": 990785.7151439625
+  },
+  "selfReportedKernelRunsN": {
+    "Fan1+Fan2 (combined)": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "baseline stdout captured as golden reference"

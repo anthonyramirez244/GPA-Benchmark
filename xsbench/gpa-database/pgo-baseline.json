@@ -1,11 +1,20 @@
 {
   "benchmark": "xsbench",
-  "timestamp": "2026-07-19T20:05:45.916169+00:00",
-  "endToEndSeconds": 14.086517292999815,
+  "timestamp": "2026-08-09T03:08:15.771285+00:00",
+  "problemSize": "-s small -m event -r 3",
+  "endToEndSeconds": 16.101716190999923,
+  "endToEndStddevSeconds": 0.057789954830236544,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
   "selfReportedKernelTimesNs": {
-    "lookup": 224000000.0
+    "lookup": 246000000.0
+  },
+  "selfReportedKernelStddevNs": {
+    "lookup": 577350.2691896257
+  },
+  "selfReportedKernelRunsN": {
+    "lookup": 3
   },
   "correctness": "PASS",
   "correctnessDetail": "stdout contained pass marker"
