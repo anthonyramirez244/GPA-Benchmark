@@ -1,9 +1,12 @@
 {
   "benchmark": "hotspot",
-  "timestamp": "2026-07-01T19:20:30.621820+00:00",
-  "endToEndSeconds": 0.6185596679997616,
+  "timestamp": "2026-07-19T23:57:53.826722+00:00",
+  "endToEndSeconds": 0.5843478569986473,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "selfReportedKernelTimesNs": {
+    "calculate_temp": 506752.0
+  },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"
 }

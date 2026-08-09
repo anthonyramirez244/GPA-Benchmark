@@ -41,6 +41,13 @@ float  *block_clusters_d;											/* per block calculation of cluster centers 
 int    *block_deltas_d;												/* per block calculation of deltas */
 cudaTextureObject_t t_features_obj = 0;								/* texture object over feature_d, (re)created each kmeansCuda() call */
 
+/* Self-reported kernel-only timing (cudaEvent-based, independent of nsys) --
+   kmeansCuda() is called once per clustering iteration, so this accumulates
+   across all calls; printed once in main() after setup() returns. Same
+   "total kernel time across all launches" convention as gaussian.cu's
+   totalKernelTime. */
+double total_kmeans_kernel_ms = 0;
+
 
 /* -------------- allocateMemory() ------------------- */
 /* allocate device memory, calculate number of blocks and threads, and invert the data array */
@@ -129,7 +136,8 @@ main( int argc, char** argv)
 	// make sure we're running on the big card
     cudaSetDevice(1);
 	// as done in the CUDA start/help document provided
-	setup(argc, argv);    
+	setup(argc, argv);
+    printf("Total kernel time (kmeansPoint): %f (ms)\n", total_kmeans_kernel_ms);
 }
 
 //																			  //
@@ -194,6 +202,11 @@ kmeansCuda(float  **feature,				/* in: [npoints][nfeatures] */
     dim3  threads( num_threads_perdim*num_threads_perdim );
     
 	/* execute the kernel */
+    cudaEvent_t kernel_start, kernel_stop;
+    cudaEventCreate(&kernel_start);
+    cudaEventCreate(&kernel_stop);
+    cudaEventRecord(kernel_start, 0);
+
     kmeansPoint<<< grid, threads >>>( feature_d,
                                       nfeatures,
                                       npoints,
@@ -205,6 +218,14 @@ kmeansCuda(float  **feature,				/* in: [npoints][nfeatures] */
 									  t_features_obj);
 
 	cudaThreadSynchronize();
+
+    cudaEventRecord(kernel_stop, 0);
+    cudaEventSynchronize(kernel_stop);
+    float kernel_ms = 0;
+    cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop);
+    total_kmeans_kernel_ms += kernel_ms;
+    cudaEventDestroy(kernel_start);
+    cudaEventDestroy(kernel_stop);
 
 	/* copy back membership (device to host) */
 	cudaMemcpy(membership_new, membership_d, npoints*sizeof(int), cudaMemcpyDeviceToHost);	

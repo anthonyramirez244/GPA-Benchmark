@@ -1,9 +1,13 @@
 {
   "benchmark": "nw",
-  "timestamp": "2026-07-01T19:43:01.537073+00:00",
-  "endToEndSeconds": 0.28883117999976093,
+  "timestamp": "2026-07-20T00:03:25.809086+00:00",
+  "endToEndSeconds": 0.2699613170007069,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "selfReportedKernelTimesNs": {
+    "needle_cuda_shared_1": 3815200.0,
+    "needle_cuda_shared_2": 1183680.0
+  },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"
 }

@@ -148,22 +148,43 @@ void runTest( int argc, char** argv)
 	dim3 dimBlock(BLOCK_SIZE, 1);
 	int block_width = ( max_cols - 1 )/BLOCK_SIZE;
 
+	// Self-reported kernel-only timing (cudaEvent-based, independent of nsys),
+	// one accumulator per kernel since benchmarks.json tracks them separately.
+	cudaEvent_t k1_start, k1_stop, k2_start, k2_stop;
+	cudaEventCreate(&k1_start); cudaEventCreate(&k1_stop);
+	cudaEventCreate(&k2_start); cudaEventCreate(&k2_stop);
+	float k1_ms = 0, k2_ms = 0;
+
 	printf("Processing top-left matrix\n");
 	//process top-left matrix
+	cudaEventRecord(k1_start, 0);
 	for( int i = 1 ; i <= block_width ; i++){
 		dimGrid.x = i;
 		dimGrid.y = 1;
 		needle_cuda_shared_1<<<dimGrid, dimBlock>>>(referrence_cuda, matrix_cuda
-		                                      ,max_cols, penalty, i, block_width); 
+		                                      ,max_cols, penalty, i, block_width);
 	}
+	cudaEventRecord(k1_stop, 0);
+	cudaEventSynchronize(k1_stop);
+	cudaEventElapsedTime(&k1_ms, k1_start, k1_stop);
+	printf("Total kernel time (needle_cuda_shared_1): %f (ms)\n", k1_ms);
+
 	printf("Processing bottom-right matrix\n");
     //process bottom-right matrix
+	cudaEventRecord(k2_start, 0);
 	for( int i = block_width - 1  ; i >= 1 ; i--){
 		dimGrid.x = i;
 		dimGrid.y = 1;
 		needle_cuda_shared_2<<<dimGrid, dimBlock>>>(referrence_cuda, matrix_cuda
-		                                      ,max_cols, penalty, i, block_width); 
+		                                      ,max_cols, penalty, i, block_width);
 	}
+	cudaEventRecord(k2_stop, 0);
+	cudaEventSynchronize(k2_stop);
+	cudaEventElapsedTime(&k2_ms, k2_start, k2_stop);
+	printf("Total kernel time (needle_cuda_shared_2): %f (ms)\n", k2_ms);
+
+	cudaEventDestroy(k1_start); cudaEventDestroy(k1_stop);
+	cudaEventDestroy(k2_start); cudaEventDestroy(k2_stop);
 
 
     cudaMemcpy(output_itemsets, matrix_cuda, sizeof(int) * size, cudaMemcpyDeviceToHost);

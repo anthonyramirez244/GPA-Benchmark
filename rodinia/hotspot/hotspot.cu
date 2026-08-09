@@ -242,7 +242,16 @@ int compute_tran_temp(float *MatrixPower,float *MatrixTemp[2], int col, int row,
 	time_elapsed=0.001;
 
         int src = 1, dst = 0;
-	
+
+        // Self-reported kernel-only timing (cudaEvent-based, independent of
+        // nsys) -- spans every calculate_temp launch in this function, same
+        // "total kernel time across all launches" convention as gaussian.cu's
+        // totalKernelTime.
+        cudaEvent_t kernel_start, kernel_stop;
+        cudaEventCreate(&kernel_start);
+        cudaEventCreate(&kernel_stop);
+        cudaEventRecord(kernel_start, 0);
+
 	for (t = 0; t < total_iterations; t+=num_iterations) {
             int temp = src;
             src = dst;
@@ -250,6 +259,15 @@ int compute_tran_temp(float *MatrixPower,float *MatrixTemp[2], int col, int row,
             calculate_temp<<<dimGrid, dimBlock>>>(MIN(num_iterations, total_iterations-t), MatrixPower,MatrixTemp[src],MatrixTemp[dst],\
 		col,row,borderCols, borderRows, Cap,Rx,Ry,Rz,step,time_elapsed);
 	}
+
+        cudaEventRecord(kernel_stop, 0);
+        cudaEventSynchronize(kernel_stop);
+        float kernel_ms = 0;
+        cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop);
+        printf("Total kernel time (calculate_temp): %f (ms)\n", kernel_ms);
+        cudaEventDestroy(kernel_start);
+        cudaEventDestroy(kernel_stop);
+
         return dst;
 }
 
