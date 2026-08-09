@@ -1,9 +1,21 @@
 {
   "benchmark": "bfs",
-  "timestamp": "2026-07-03T21:14:41.486456+00:00",
-  "endToEndSeconds": 3.5158461909999232,
+  "timestamp": "2026-08-09T02:36:26.148209+00:00",
+  "problemSize": "../../data/bfs/graph1MW_6.txt",
+  "endToEndSeconds": 3.272939074000078,
+  "endToEndStddevSeconds": 0.4414127258021762,
+  "endToEndRuns": 3,
   "kernelTimesNs": {},
   "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "selfReportedKernelTimesNs": {
+    "Kernel+Kernel2 (combined)": 2636064.0
+  },
+  "selfReportedKernelStddevNs": {
+    "Kernel+Kernel2 (combined)": 131056.48345656159
+  },
+  "selfReportedKernelRunsN": {
+    "Kernel+Kernel2 (combined)": 3
+  },
   "correctness": "PASS",
   "correctnessDetail": "baseline output captured as golden reference"
 }

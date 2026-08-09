@@ -181,6 +181,22 @@ void BFSGraph( int argc, char** argv)
 	int k=0;
 	printf("Start traversing the tree\n");
 	bool stop;
+
+	// Self-reported kernel-only timing (cudaEvent-based, independent of nsys) -- spans the
+	// whole do-while traversal loop (both Kernel and Kernel2, across all k iterations) as one
+	// combined span rather than timing each launch separately. Kernel and Kernel2 alternate
+	// every iteration for a variable, graph-dependent number of iterations (k), so a
+	// per-launch cudaEventSynchronize would add a host sync every iteration -- for a
+	// launch-overhead-dominated loop like this one, that sync itself would distort both the
+	// timing being measured and (since this instrumentation is always-on, not profiling-only)
+	// end-to-end time. Same "combined across multiple kernels" convention as gaussian.cu's
+	// Fan1+Fan2 timer; also includes the two per-iteration cudaMemcpy calls, same as lud's
+	// "(kernel+memcpy)" convention.
+	cudaEvent_t kernel_start, kernel_stop;
+	cudaEventCreate(&kernel_start);
+	cudaEventCreate(&kernel_stop);
+	cudaEventRecord(kernel_start, 0);
+
 	//Call the Kernel untill all the elements of Frontier are not false
 	do
 	{
@@ -189,17 +205,24 @@ void BFSGraph( int argc, char** argv)
 		cudaMemcpy( d_over, &stop, sizeof(bool), cudaMemcpyHostToDevice) ;
 		Kernel<<< grid, threads, 0 >>>( d_graph_nodes, d_graph_edges, d_graph_mask, d_updating_graph_mask, d_graph_visited, d_cost, no_of_nodes);
 		// check if kernel execution generated and error
-		
+
 
 		Kernel2<<< grid, threads, 0 >>>( d_graph_mask, d_updating_graph_mask, d_graph_visited, d_over, no_of_nodes);
 		// check if kernel execution generated and error
-		
+
 
 		cudaMemcpy( &stop, d_over, sizeof(bool), cudaMemcpyDeviceToHost) ;
 		k++;
 	}
 	while(stop);
 
+	cudaEventRecord(kernel_stop, 0);
+	cudaEventSynchronize(kernel_stop);
+	float kernel_ms = 0;
+	cudaEventElapsedTime(&kernel_ms, kernel_start, kernel_stop);
+	printf("Total kernel time (Kernel+Kernel2 combined): %f (ms)\n", kernel_ms);
+	cudaEventDestroy(kernel_start);
+	cudaEventDestroy(kernel_stop);
 
 	printf("Kernel Executed %d times\n",k);
 
