@@ -26,3 +26,25 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Self-reported kernel timing lud_cuda (kernel+memcpy): 1917000ns -> 2416000ns (0.793x)
 - Change: rodinia/lud-opt's actual validated technique -- same register-accumulator idea as the entry above, but applied to lud_diagonal (the kernel -opt actually applies it to) instead of lud_perimeter. `idx = threadIdx.x` cached once; both inner loops (the forward-substitution division loop and the row-update loop) accumulate into a local `s` instead of repeatedly read-modify-writing `shadow[idx][i]`/`shadow[i+1][idx]`, writing back once.
 - Decision: REVERTED — correctness PASS, but a real regression: 0.793x, even worse than the peri_col attempt above (0.946x). Third confirmed case this session (after xsbench's no-op and nw's regression) where a technique validated in the repo's own `-opt` reference, applied exactly as `-opt` applies it, measurably does not help on this hardware (RTX 3070/Ampere) -- likely the same register-pressure/occupancy tradeoff seen elsewhere: this kernel's block is small (BLOCK_SIZE x 1 threads) and the extra register for `s` may cost more than the shared-memory re-reads it saves. Not re-attempting.
+
+### 2026-08-09T02:32:34.857079+00:00 — lud (Phase 2: retest lud_diagonal fix at 4x problem size)
+- Problem size: -s 1024 -v (baseline was measured at: -s 1024 -v — matched-size retest; original
+  entry above (2026-07-20) was measured at "-s 256 -v")
+- Method: same situation as nw -- the fix was never committed to git, reconstructed from the
+  2026-07-20 entry's description (`idx = threadIdx.x` cached once; both `lud_diagonal` inner loops
+  accumulate into a local `s` instead of repeatedly read-modify-writing
+  `shadow[idx][i]`/`shadow[i+1][idx]`, writing back once). `benchmarks.json`'s `runCmd` temporarily
+  changed from `["./cuda/lud_cuda", "-s", "256", "-v"]` to `["./cuda/lud_cuda", "-s", "1024", "-v"]`
+  (4x linear matrix size) for this retest only, then restored.
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 1.1518s (σ=0.0266, n=3) -> 1.1267s (σ=0.0495, n=3) (1.022x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lud_cuda (kernel+memcpy): 5304000ns (σ=10263, n=3) -> 5688000ns (σ=539617, n=3) (0.932x) [NOT SIGNIFICANT, within 2σ noise]
+- Decision: REVERTED (unconfirmed) at this problem size — does NOT reverse the 2026-07-20 REVERTED
+  verdict at "-s 256 -v" (that entry stays as-is). Partial version of nw's finding: the regression
+  shrank substantially (from a significant-by-inspection -20.7% at size 256 to a nominal, NOT
+  SIGNIFICANT -6.8% at size 1024 — roughly a 3x reduction in effect size) but did not flip to
+  flat/positive the way nw's did. Directionally consistent with the same fixed-overhead-dilutes-
+  with-scale hypothesis from nw's retest, but weaker evidence here since it never clears
+  significance in either direction at either size for this specific metric. Not proposing to KEPT
+  at either size. See report.md Phase 2.
