@@ -43,7 +43,7 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Self-reported kernel timing extract: 1046000ns (σ=134240, n=3) -> 964000ns (σ=27221, n=3) (1.085x) [NOT SIGNIFICANT, within 2σ noise]
 - Self-reported kernel timing compress: 39000ns (σ=8544, n=3) -> 37000ns (σ=1000, n=3) (1.054x) [NOT SIGNIFICANT, within 2σ noise]
 - Self-reported kernel timing srad+srad2+prepare+reduce (combined COMPUTE stage): 16482000ns (σ=548207, n=3) -> 15296000ns (σ=352350, n=3) (1.078x) [NOT SIGNIFICANT, within 2σ noise]
-- Decision: **KEPT, but downgrade confidence — statistically unconfirmed at n=3.** All three
+- Decision: KEPT (unconfirmed) — statistically unconfirmed at n=3. All three
   self-reported metrics now point the same direction (5-9% faster) with a clean, matched-sample
   comparison, and the fix is architecturally sound (register/shared-memory hoist of a
   provably block-uniform value, no correctness risk, byte-identical output both times). But none
