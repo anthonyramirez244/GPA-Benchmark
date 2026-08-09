@@ -17,3 +17,16 @@
 gpa-measurements
 gpa-database-*
 gpa.log
+
+# nsys profiling artifacts and compiled benchmark binaries/outputs left in the
+# working tree by manual runs -- regenerable, not meant to be tracked. Only
+# affects currently-untracked files; existing tracked *.out/*.pgm/result.txt
+# fixtures (e.g. rodinia/srad/srad_v1-opt/image_out.pgm) are unaffected.
+*.qdstrm
+*.out
+*.pgm
+result.txt
+rodinia/bfs-opt/bfs
+rodinia/nw-opt/needle
+rodinia/huffman/pavle
+rodinia/huffman-opt/pavle
