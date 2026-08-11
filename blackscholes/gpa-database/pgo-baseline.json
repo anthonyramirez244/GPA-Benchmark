@@ -1,0 +1,21 @@
+{
+  "benchmark": "blackscholes",
+  "timestamp": "2026-08-11T05:40:29.188733+00:00",
+  "problemSize": "(no args)",
+  "endToEndSeconds": 0.6569236240000009,
+  "endToEndStddevSeconds": 0.012945764416627566,
+  "endToEndRuns": 3,
+  "kernelTimesNs": {},
+  "localTimingNote": "nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not",
+  "selfReportedKernelTimesNs": {
+    "BlackScholesGPU": 191088.0
+  },
+  "selfReportedKernelStddevNs": {
+    "BlackScholesGPU": 992.3337812114094
+  },
+  "selfReportedKernelRunsN": {
+    "BlackScholesGPU": 3
+  },
+  "correctness": "PASS",
+  "correctnessDetail": "stdout contained pass marker"
+}
