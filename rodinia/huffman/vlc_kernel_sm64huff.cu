@@ -89,7 +89,16 @@ __global__ static void vlc_encode_kernel_sm64huff(unsigned int* data,
 
     /* Build the sum in place up the tree */
     for (unsigned int d = (blockDim.x)>>1; d > 0; d >>= 1)  {
-        __syncthreads();
+        // Mirror image of the down-sweep's GPUWarpBalanceOptimizer fix below, but d
+        // *decreases* here, so the safe threshold is different: this sync guards the
+        // PREVIOUS iteration's writes (at d*2, since d halves each step), not the
+        // current iteration's. __syncwarp() is only safe once the previous iteration's
+        // writers were also confined to warp 0, i.e. d*2 <= 32 -- d <= 16, not d <= 32.
+        if (d <= 16) {
+            __syncwarp();
+        } else {
+            __syncthreads();
+        }
         if (k < d)   {
             unsigned char ai = offset*(2*k+1)-1;
             unsigned char bi = offset*(2*k+2)-1;

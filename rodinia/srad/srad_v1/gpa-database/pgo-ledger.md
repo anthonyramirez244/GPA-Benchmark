@@ -78,3 +78,23 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Self-reported kernel timing extract: 1046000ns (σ=134240, n=3) -> 986000ns (σ=38004, n=3) (1.061x) [NOT SIGNIFICANT, within 2σ noise]
 - Self-reported kernel timing compress: 39000ns (σ=8544, n=3) -> 36000ns (σ=1528, n=3) (1.083x) [NOT SIGNIFICANT, within 2σ noise]
 - Self-reported kernel timing srad+srad2+prepare+reduce (combined COMPUTE stage): 16481999ns (σ=548207, n=3) -> 16364999ns (σ=943347, n=3) (1.007x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T15:14:31.881898+00:00 — srad
+- Problem size: 100 0.5 502 458 (baseline was measured at: (unknown — predates problem-size tracking) — this is a deliberate different-size comparison, not a like-for-like retest; do not treat the speedup below as validating/invalidating the baseline's original problem size)
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.3764s (σ=0.0222, n=3) -> 0.3672s (σ=0.0113, n=3) (1.025x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing extract: 1046000ns (σ=134240, n=3) -> 1146000ns (σ=110014, n=3) (0.913x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing compress: 39000ns (σ=8544, n=3) -> 44000ns (σ=14177, n=3) (0.886x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing srad+srad2+prepare+reduce (combined COMPUTE stage): 16481999ns (σ=548207, n=3) -> 17983999ns (σ=185974, n=3) (0.916x) [clears 2σ]
+- Change: srad_kernel.cu, srad()'s ICOV computation (lines 72-73) -- GPUStrengthReductionOptimizer's
+  top finding this profile (impact 0.176, ratio 34.05%, GINS:LAT_TMEM), a residual/different
+  instance of the same optimizer already used for the KEPT d_q0sqr_recip fix. `0.5`/`1.0/16.0`/
+  `0.25` were 64-bit double literals multiplying fp (float) operands in `d_num`/`d_den` -- same
+  fix class as hotspot's `2.0`->`2.0f` (confirmed `fp` is `#define fp float` in define.c). Changed
+  to `0.5f`/`1.0f/16.0f`/`0.25f`.
+- Decision: REVERTED -- correctness PASS, but governing metric `selfReportedKernelSpeedups` for
+  `srad+srad2+prepare+reduce (combined COMPUTE stage)` reads 0.916x and DOES clear 2sigma (n=3,
+  flagged significant) -- a real regression per SKILL.md step 8 policy, reverted immediately.
+  Combined/impure metric across 4 kernels (only srad touched), but policy doesn't exempt combined
+  metrics from a significant-regression revert. Reverted cleanly, verified via git diff.

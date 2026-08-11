@@ -67,3 +67,11 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
 - Self-reported kernel timing needle_cuda_shared_1: 3815200ns (σ=0, n=?) -> 2386048ns (σ=192579, n=3) (1.599x) [clears 2σ]
 - Self-reported kernel timing needle_cuda_shared_2: 1183680ns (σ=0, n=?) -> 1335296ns (σ=66689, n=3) (0.886x) [clears 2σ]
+
+### 2026-08-11T05:53:09.621446+00:00 — nw
+- Problem size: 2048 10
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.2981s (σ=0.0244, n=3) -> 0.3068s (σ=0.0193, n=3) (0.971x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing needle_cuda_shared_2: 1282848ns (σ=1393884, n=3) -> 1263616ns (σ=56366, n=3) (1.015x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing needle_cuda_shared_1: 2582944ns (σ=1264166, n=3) -> 3216864ns (σ=773191, n=3) (0.803x) [NOT SIGNIFICANT, within 2σ noise]

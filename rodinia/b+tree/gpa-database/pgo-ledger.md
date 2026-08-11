@@ -54,3 +54,30 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
 - Self-reported kernel timing findK: 873000ns (σ=170066, n=3) -> 875000ns (σ=35852, n=3) (0.998x) [NOT SIGNIFICANT, within 2σ noise]
 - Self-reported kernel timing findRangeK: 349000ns (σ=58847, n=3) -> 242000ns (σ=25942, n=3) (1.442x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T05:47:57.005159+00:00 — b+tree
+- Problem size: file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 0.9342s (σ=0.0960, n=3) -> 0.9064s (σ=0.0388, n=3) (1.031x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing findRangeK: 249000ns (σ=27713, n=3) -> 299000ns (σ=31086, n=3) (0.833x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing findK: 748000ns (σ=5568, n=3) -> 757000ns (σ=56722, n=3) (0.988x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T15:10:46.779706+00:00 — b+tree
+- Problem size: file ../../data/b+tree/mil.txt command ../../data/b+tree/command.txt
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 1.1167s (σ=0.0359, n=3) -> 1.0201s (σ=0.0343, n=3) (1.095x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing findK: 873000ns (σ=170066, n=3) -> 961000ns (σ=159529, n=3) (0.908x) [NOT SIGNIFICANT, within 2σ noise]
+- Self-reported kernel timing findRangeK: 349000ns (σ=58847, n=3) -> 331000ns (σ=51811, n=3) (1.054x) [NOT SIGNIFICANT, within 2σ noise]
+- Change: kernel_gpu_cuda.cu, findK()'s tree-level loop header (line 42) -- GPULoopUnrollOptimizer's
+  top untried finding this profile (impact 0.038, ratio 17.64%, GINS:LAT_DEP). Added `#pragma
+  unroll` (no fixed factor -- `height` is a runtime kernel parameter, uniform across all threads
+  in the block, so no divergence risk at the loop's internal __syncthreads() calls). The other two
+  findings this profile (GPUCodeReorderOptimizer 0.189 impact, GPUWarpBalanceOptimizer 0.155
+  impact) are both already logged against findK -- CodeReorder REVERTED 2026-07-13 (skipped per
+  step 3, same kernel+optimizer pair even though GPA now points at a different specific line);
+  WarpBalance is the already-KEPT shared-memory hoist live in this same file.
+- Decision: KEPT (unconfirmed) -- correctness PASS, governing metric `selfReportedKernelSpeedups`
+  for findK reads 0.908x (nominal regression), does NOT clear 2sigma (n=3). findRangeK (untouched
+  by this change) reads 1.054x, not attributed to this edit -- noise, noted for completeness only.

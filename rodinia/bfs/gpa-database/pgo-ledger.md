@@ -25,3 +25,10 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - End-to-end: 3.2729s (σ=0.4414, n=3) -> 3.2517s (σ=0.0096, n=3) (1.007x) [NOT SIGNIFICANT, within 2σ noise]
 - Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
 - Self-reported kernel timing Kernel+Kernel2 (combined): 2636064ns (σ=131056, n=3) -> 2483712ns (σ=271698, n=3) (1.061x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T05:45:31.900939+00:00 — bfs
+- Problem size: ../../data/bfs/graph1MW_6.txt
+- Correctness: PASS (output matches golden reference exactly)
+- End-to-end: 3.1194s (σ=1.2608, n=3) -> 3.0351s (σ=0.0341, n=3) (1.028x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing Kernel+Kernel2 (combined): 2594016ns (σ=41001, n=3) -> 3143520ns (σ=347221, n=3) (0.825x) [NOT SIGNIFICANT, within 2σ noise]

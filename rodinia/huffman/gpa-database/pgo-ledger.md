@@ -68,3 +68,22 @@ Before proposing a new optimization, check here first for prior attempts on the 
   report.md's Agent-vs-Human comparison entry for the full context, including that the human
   `-opt` reference kernel itself also shows no significant speedup on this hardware (0.982x,
   not significant) when measured the same way.
+
+### 2026-08-11T14:50:36.629170+00:00 — huffman
+- Problem size: ../../data/huffman/test1024_H2.206587175259.in
+- Correctness: PASS (stdout contained pass marker)
+- End-to-end: 0.2851s (σ=0.0160, n=3) -> 0.3095s (σ=0.0324, n=3) (0.921x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing vlc_encode_kernel_sm64huff: 28480ns (σ=2484, n=3) -> 31526ns (σ=3917, n=3) (0.903x) [NOT SIGNIFICANT, within 2σ noise]
+- Change: vlc_kernel_sm64huff.cu, up-sweep loop (line 91, `for (d = blockDim.x>>1; d > 0; d >>= 1)`)
+  -- `GPUWarpBalanceOptimizer`'s top finding this profile (impact 0.322, ratio 42.9%,
+  `GINS:LAT_SYNC`), a genuinely different location than the already-fixed down-sweep loop.
+  Mirror-image fix, but with a corrected threshold: since d *decreases* here (vs. increases in
+  the down-sweep), each sync guards the PREVIOUS iteration's writes at d*2, not the current one --
+  __syncwarp() is only safe once d*2<=32, i.e. d<=16, not d<=32. Verified block size is 256
+  threads (`num_block_threads` in main_test_cu.cu), so the up-sweep's earliest iterations (d=128,
+  64) genuinely span multiple warps and must keep __syncthreads().
+- Decision: KEPT (unconfirmed) -- correctness PASS, governing metric `selfReportedKernelSpeedups`
+  reads 0.903x (nominal regression), does NOT clear 2sigma (n=3). Keeping despite the nominal
+  number: same rationale as the down-sweep's original fix -- provably confines the barrier to
+  the threads that could actually be waiting on it, independent of the unconfirmed timing.

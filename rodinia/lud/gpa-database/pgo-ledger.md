@@ -62,3 +62,31 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - End-to-end: 0.2718s (σ=0.0299, n=3) -> 0.2700s (σ=0.0262, n=3) (1.007x) [NOT SIGNIFICANT, within 2σ noise]
 - Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
 - Self-reported kernel timing lud_cuda (kernel+memcpy): 2478000ns (σ=545474, n=3) -> 2916000ns (σ=258156, n=3) (0.850x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T05:51:54.231447+00:00 — lud
+- Problem size: -s 256 -v
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 0.2622s (σ=0.0214, n=3) -> 0.2555s (σ=0.0280, n=3) (1.026x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lud_cuda (kernel+memcpy): 3146000ns (σ=289838, n=3) -> 2645000ns (σ=535083, n=3) (1.189x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T15:03:30.349560+00:00 — lud
+- Problem size: -s 256 -v
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 0.2718s (σ=0.0299, n=3) -> 0.3050s (σ=0.0254, n=3) (0.891x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing lud_cuda (kernel+memcpy): 2478000ns (σ=545474, n=3) -> 3357000ns (σ=283154, n=3) (0.738x) [NOT SIGNIFICANT, within 2σ noise]
+- Change: lud_kernel.cu, lud_perimeter()'s peri-row and peri-col inner accumulation loops
+  (lines 135, 141) -- GPULoopUnrollOptimizer's top finding this profile (impact 0.070, ratio
+  71.05%, GINS:LAT_DEP), a genuinely different optimizer class than the already-REVERTED
+  register-accumulator hoist (GPUCodeReorderOptimizer, still REVERTED at this problem size,
+  skipped per step 3). Added `#pragma unroll` to both inner `for(j=0; j<i; j++)` loops --
+  read-modify-write accumulation into peri_row[i][idx]/peri_col[idx][i] forms a sequential
+  dependency chain across j that GPA flagged at both loop headers (line 134 ratio 21.4%, line
+  140 ratio 35.4%).
+- Decision: KEPT (unconfirmed) -- correctness PASS, governing metric `selfReportedKernelSpeedups`
+  for `lud_cuda (kernel+memcpy)` (combined/impure metric, includes cudaMemcpy) reads 0.738x --
+  a large nominal number but does NOT clear 2sigma at n=3 (sd=283154ns on a 3357000ns median).
+  Per SKILL.md step 8, a nominal-but-not-significant regression does not trigger revert on its
+  own. Flagging explicitly: this is the largest nominal regression number in the corpus that
+  wasn't reverted, worth a larger-n retest before treating the unroll as neutral.

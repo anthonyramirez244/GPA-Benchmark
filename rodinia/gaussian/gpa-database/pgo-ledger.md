@@ -41,3 +41,10 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - End-to-end: 0.2976s (σ=0.0279, n=3) -> 0.2975s (σ=0.0218, n=3) (1.001x) [NOT SIGNIFICANT, within 2σ noise]
 - Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
 - Self-reported kernel timing Fan1+Fan2 (combined): 13005000ns (σ=990786, n=3) -> 13664000ns (σ=288437, n=3) (0.952x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T05:49:00.479483+00:00 — gaussian
+- Problem size: -f ../../data/gaussian/matrix208.txt
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 0.2995s (σ=0.0280, n=3) -> 0.2764s (σ=0.0142, n=3) (1.083x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing Fan1+Fan2 (combined): 15242000ns (σ=362537, n=3) -> 16235000ns (σ=1754416, n=3) (0.939x) [NOT SIGNIFICANT, within 2σ noise]

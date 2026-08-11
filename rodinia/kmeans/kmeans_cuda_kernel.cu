@@ -86,12 +86,19 @@ kmeansPoint(float  *features,			/* in: [npoints*nfeatures] */
 			int cluster_base_index = i*nfeatures;					/* base index of cluster centers for inverted array */			
 			float ans=0.0;												/* Euclidean distance sqaure */
 
+			/* Software-pipelined: issue next iteration's tex1Dfetch before this
+			   iteration's arithmetic, so the load's latency overlaps with the
+			   diff*diff compute instead of stalling on it every iteration.
+			   (GPUCodeReorderOptimizer, GINS:LAT_IDEP_WAR at kmeans_cuda_kernel.cu:89/92) */
+			float feat = tex1Dfetch<float>(t_features, point_id);
 			for (j=0; j < nfeatures; j++)
-			{					
-				int addr = point_id + j*npoints;					/* appropriate index of data point */
-				float diff = (tex1Dfetch<float>(t_features,addr) -
-							  c_clusters[cluster_base_index + j]);	/* distance between a data point to cluster centers */
+			{
+				float next_feat = (j + 1 < nfeatures)
+					? tex1Dfetch<float>(t_features, point_id + (j+1)*npoints)
+					: 0.0f;
+				float diff = (feat - c_clusters[cluster_base_index + j]);	/* distance between a data point to cluster centers */
 				ans += diff*diff;									/* sum of squares */
+				feat = next_feat;
 			}
 			dist = ans;		
 

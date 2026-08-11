@@ -51,3 +51,35 @@ Before proposing a new optimization, check here first for prior attempts on the 
 - End-to-end: 4.4970s (σ=0.0653, n=3) -> 4.4261s (σ=0.0344, n=3) (1.016x) [NOT SIGNIFICANT, within 2σ noise]
 - Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
 - Self-reported kernel timing kmeansPoint: 1725440ns (σ=60566, n=3) -> 1665952ns (σ=70540, n=3) (1.036x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T05:50:36.830528+00:00 — kmeans
+- Problem size: -o -i ../../data/kmeans/kdd_cup
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 4.1873s (σ=0.6464, n=3) -> 4.0865s (σ=0.0199, n=3) (1.025x) [NOT SIGNIFICANT, within 2σ noise]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing kmeansPoint: 1694720ns (σ=190503, n=3) -> 1764256ns (σ=66935, n=3) (0.961x) [NOT SIGNIFICANT, within 2σ noise]
+
+### 2026-08-11T14:57:34.341300+00:00 — kmeans
+- Problem size: -o -i ../../data/kmeans/kdd_cup
+- Correctness: PASS (stdout (minus ignored/non-deterministic lines) matches golden reference exactly)
+- End-to-end: 4.4970s (σ=0.0653, n=3) -> 4.7178s (σ=0.0719, n=3) (0.953x) [clears 2σ]
+- Local kernel timing (nsys): unavailable (nsys captured no GPU kernel activity records on this platform (known limitation on some WSL2/driver combinations) -- end-to-end timing is still valid, local kernel timing is not)
+- Self-reported kernel timing kmeansPoint: 1725440ns (σ=60566, n=3) -> 1764640ns (σ=40663, n=3) (0.978x) [NOT SIGNIFICANT, within 2σ noise]
+- Change: kmeans_cuda_kernel.cu, kmeansPoint()'s feature-distance loop (lines 89-95) --
+  GPUCodeReorderOptimizer's top finding this profile (impact 0.122, ratio 34.45%,
+  GINS:LAT_IDEP_WAR), a genuinely different fix than the already-REVERTED pragma-unroll-8
+  attempt. Software-pipelined the tex1Dfetch load: issue iteration j+1's fetch before iteration
+  j's diff*diff arithmetic, so the load latency overlaps with compute instead of stalling on it
+  every iteration. Note: the fetched value (point_id + j*npoints) doesn't actually depend on the
+  outer cluster loop `i` at all -- it's redundantly re-fetched from texture memory once per
+  cluster -- but restructuring the loop nesting to cache it once per point is a bigger, riskier
+  change outside GPA's specific "reorder, don't restructure" suggestion for this finding; left as
+  a follow-up candidate, not attempted here.
+- Decision: KEPT (unconfirmed) -- correctness PASS, governing metric `selfReportedKernelSpeedups`
+  reads 0.978x (nominal regression), does NOT clear 2sigma (n=3). endToEndSpeedup reads 0.953x
+  and IS flagged significant, but per SKILL.md step 8 precedence the kernel-level metric governs,
+  not end-to-end. Keeping: the prefetch is a provable latency-hiding technique independent of the
+  unconfirmed timing, and kmeans' own history (2026-07-20) already showed 3-run self-reported
+  timing swinging widely (0.996x/0.831x/1.017x) on this benchmark's ~1.7ms kernel against a ~4.5s
+  total runtime dominated by dataset I/O -- consistent with genuine measurement noise at this scale
+  rather than a real regression.

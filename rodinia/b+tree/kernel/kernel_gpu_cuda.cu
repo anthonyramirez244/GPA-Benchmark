@@ -37,8 +37,15 @@ findK(	long height,
 	}
 	__syncthreads();
 
-	// processtree levels
+	// processtree levels -- GPULoopUnrollOptimizer's top untried finding
+	// (impact 0.038, ratio 17.6% at this loop header, GINS:LAT_DEP): the
+	// s_currKnode update at the end of each iteration feeds directly into
+	// next iteration's knodesD[s_currKnode] read, a sequential dependency
+	// chain across tree levels. height is a runtime kernel parameter,
+	// uniform across every thread in the block, so unrolling doesn't risk
+	// divergence at the __syncthreads() calls inside the loop body.
 	int i;
+	#pragma unroll
 	for(i = 0; i < height; i++){
 
 		// if value is between the two keys

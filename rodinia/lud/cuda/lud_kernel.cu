@@ -132,12 +132,20 @@ lud_perimeter(float *m, int matrix_dim, int offset)
   if (threadIdx.x < BLOCK_SIZE) { //peri-row
     idx=threadIdx.x;
     for(i=1; i < BLOCK_SIZE; i++){
+      // GPULoopUnrollOptimizer's top finding (GINS:LAT_DEP, ratio 21.4% at this
+      // loop header): the read-modify-write accumulation into peri_row[i][idx]
+      // forms a sequential dependency chain across j; unrolling shortens the
+      // critical path the scheduler has to hide.
+      #pragma unroll
       for (j=0; j < i; j++)
         peri_row[i][idx]-=dia[i][j]*peri_row[j][idx];
     }
   } else { //peri-col
     idx=threadIdx.x - BLOCK_SIZE;
     for(i=0; i < BLOCK_SIZE; i++){
+      // Same finding, higher ratio (35.4%) on this loop header -- identical
+      // dependency-chain shape as the peri-row branch above.
+      #pragma unroll
       for(j=0; j < i; j++)
         peri_col[idx][i]-=peri_col[idx][j]*dia[j][i];
       peri_col[idx][i] /= dia[i][i];
